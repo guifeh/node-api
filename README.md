@@ -120,3 +120,4 @@ flowchart LR
   Fastify --> Docs[/docs (Swagger / scalar-api-reference)]
   DockerCompose[Docker Compose] --> DB
   DB -->|dados persistidos| Volume[(Volume: postgres_data)]
+```
