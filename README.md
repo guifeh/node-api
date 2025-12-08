@@ -96,3 +96,27 @@ Contribuição
 
 Licença
 - Adicione a licença desejada
+
+## Diagrama de fluxo
+
+Abaixo está um diagrama Mermaid com o fluxo principal da aplicação (requisições do cliente → rotas Fastify → banco PostgreSQL → persistência/volume; documentação disponível em /docs quando em desenvolvimento).
+
+```mermaid
+flowchart LR
+  Client[Cliente (browser / curl / app)] -->|HTTP| Fastify[Fastify Server]
+  Fastify --> Routes{Rotas /courses}
+  Routes --> Create[POST /courses]
+  Routes --> List[GET /courses]
+  Routes --> GetById[GET /courses/:id]
+  Routes --> Update[PUT /courses/:id]
+  Routes --> Delete[DELETE /courses/:id]
+
+  Create --> DB[(Postgres 17)]
+  List --> DB
+  GetById --> DB
+  Update --> DB
+  Delete --> DB
+
+  Fastify --> Docs[/docs (Swagger / scalar-api-reference)]
+  DockerCompose[Docker Compose] --> DB
+  DB -->|dados persistidos| Volume[(Volume: postgres_data)]
