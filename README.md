@@ -2,14 +2,25 @@
 
 Resumo rápido
 - API REST simples em TypeScript usando Fastify.
-- Rotas principais (implementadas no projeto):
-  - POST /courses — criar curso
-  - GET /courses — listar cursos
-  - GET /courses/:id — obter curso por id
-  - PUT /courses/:id — editar curso
-  - DELETE /courses/:id — remover curso
+- Rotas principais (implementadas no projeto — arquivos em `src/routes/`):
+  - POST /courses — criar curso (create-course.ts)
+  - GET /courses — listar cursos (get-courses.ts)
+  - GET /courses/:id — obter curso por id (get-course-by-id.ts)
+  - PUT /courses/:id — editar curso (edit-courses.ts)
+  - DELETE /courses/:id — remover curso (delete-courses.ts)
 - Banco: PostgreSQL 17 (arquivo docker-compose.yml incluído).
 - Documentação Swagger ativada quando NODE_ENV=development.
+
+API pública (Render)
+- A API também está implantada no Render e pode ser acessada em:
+  - https://node-api-7zux.onrender.com
+- Endpoints disponíveis na mesma estrutura:
+  - POST https://node-api-7zux.onrender.com/courses
+  - GET https://node-api-7zux.onrender.com/courses
+  - GET https://node-api-7zux.onrender.com/courses/:id
+  - PUT https://node-api-7zux.onrender.com/courses/:id
+  - DELETE https://node-api-7zux.onrender.com/courses/:id
+- Observação sobre documentação em produção: a rota `/docs` (Swagger / scalar-api-reference) normalmente está ativa apenas quando NODE_ENV=development. Tentar https://node-api-7zux.onrender.com/docs pode não retornar a UI pública dependendo da configuração de deploy.
 
 Pré-requisitos
 - Node.js (recomendado >= 18)
@@ -97,9 +108,9 @@ Contribuição
 Licença
 - Adicione a licença desejada
 
-## Diagrama de fluxo
+## Diagrama de fluxo (Mermaid)
 
-Abaixo está um diagrama Mermaid com o fluxo principal da aplicação (requisições do cliente → rotas Fastify → banco PostgreSQL → persistência/volume; documentação disponível em /docs quando em desenvolvimento).
+Observação: para o Mermaid funcionar corretamente no README, mantenha o bloco sem indentação e use a tag ```mermaid``` exatamente como abaixo.
 
 ```mermaid
 flowchart LR
