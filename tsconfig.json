@@ -9,10 +9,16 @@
     "target": "es2022",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "outDir": "dist",
+    "rootDir": "src",
 
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16"
-  }
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true
+  },
+
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", ".vscode", "**/*.test.ts", "drizzle", "vite.config.*"]
 }
