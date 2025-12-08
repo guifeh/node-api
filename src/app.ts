@@ -1,11 +1,11 @@
 import fastify from "fastify"
 import { validatorCompiler, serializerCompiler, type ZodTypeProvider, jsonSchemaTransform } from 'fastify-type-provider-zod'
 import { fastifySwagger } from '@fastify/swagger'
-import { createCoursesRoute } from "./src/routes/create-course.ts"
-import { getCoursesRoute } from "./src/routes/get-courses.ts"
-import { getCoursesByIdRoute } from "./src/routes/get-course-by-id.ts"
-import { editCoursesRoute } from "./src/routes/edit-courses.ts"
-import { deleteCoursesRoute } from "./src/routes/delete-courses.ts"
+import { createCoursesRoute } from "./routes/create-course.ts"
+import { getCoursesRoute } from "./routes/get-courses.ts"
+import { getCoursesByIdRoute } from "./routes/get-course-by-id.ts"
+import { editCoursesRoute } from "./routes/edit-courses.ts"
+import { deleteCoursesRoute } from "./routes/delete-courses.ts"
 import scalarAPIReference from '@scalar/fastify-api-reference'
 
 const server = fastify({
@@ -45,6 +45,4 @@ server.register(deleteCoursesRoute)
 server.setSerializerCompiler(serializerCompiler)
 server.setValidatorCompiler(validatorCompiler)
 
-server.listen({ port: 3333}).then(() => {
-    console.log('HTTP server running!')
-})
+export { server }

@@ -15,6 +15,34 @@
       "when": 1765142251526,
       "tag": "0001_careless_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765165755166,
+      "tag": "0002_cold_lake",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765165881336,
+      "tag": "0003_workable_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765167281900,
+      "tag": "0004_fantastic_stellaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765167954929,
+      "tag": "0005_romantic_mojo",
+      "breakpoints": true
     }
   ]
 }
