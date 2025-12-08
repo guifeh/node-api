@@ -1,10 +1,9 @@
 node_modules
-dist
-.vscode
-.env
 .git
-docker-compose.yml
-npm-debug.log
-README.md
-.idea
-.DS_Store
+.env
+.env.test
+coverage
+*.log
+*.test.ts
+vitest.config.ts
+requisicoes.http
