@@ -1,15 +1,89 @@
-# Desafio Node.js — API de Cursos
+# Desafio Node.js – Primeira API (aulas)
 
-Resumo rápido
-- API REST simples em TypeScript usando Fastify.
-- Rotas principais (implementadas no projeto — arquivos em `src/routes/`):
-  - POST /courses — criar curso (create-course.ts)
-  - GET /courses — listar cursos (get-courses.ts)
-  - GET /courses/:id — obter curso por id (get-course-by-id.ts)
-  - PUT /courses/:id — editar curso (edit-courses.ts)
-  - DELETE /courses/:id — remover curso (delete-courses.ts)
-- Banco: PostgreSQL 17 (arquivo docker-compose.yml incluído).
-- Documentação Swagger ativada quando NODE_ENV=development.
+API simples em Node.js + TypeScript usando Fastify, Drizzle ORM (PostgreSQL) e Zod. Inclui documentação Swagger/Scalar em ambiente de desenvolvimento.
+
+## Requisitos
+- Node.js 22+
+- Docker e Docker Compose
+- npm (ou outro gerenciador, mas o projeto usa `package-lock.json`)
+
+## Tecnologias
+- Fastify 5
+- TypeScript
+- Drizzle ORM + PostgreSQL
+- Zod (validação)
+- Swagger/OpenAPI + Scalar API Reference (em `/docs` quando `NODE_ENV=development`)
+
+## Configuração
+1. Clone o repositório e acesse a pasta do projeto.
+2. Instale as dependências:
+```bash
+npm install
+```
+3. Suba o banco Postgres com Docker:
+```bash
+docker compose up -d
+```
+4. Crie um arquivo `.env` na raiz com:
+```bash
+# URL do banco (Docker local padrão)
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/desafio
+
+# Ativa docs em /docs
+NODE_ENV=development
+```
+5. Rode as migrações (Drizzle):
+```bash
+npm run db:migrate
+```
+(opcional) Para inspecionar o schema/estado com o Drizzle Studio:
+```bash
+npm run db:studio
+```
+
+## Executando o servidor
+```bash
+npm run dev
+```
+- Porta padrão: `http://localhost:3333`
+- Logs legíveis habilitados
+- Documentação da API (em dev): `http://localhost:3333/docs`
+
+## Endpoints
+Base URL: `http://localhost:3333`
+
+- POST `/courses`
+  - Cria um curso
+  - Body (JSON):
+    ```json
+    { "title": "Curso de Docker" }
+    ```
+  - Respostas:
+    - 201: `{ "courseId": "<uuid>" }`
+
+- GET `/courses`
+  - Lista todos os cursos
+  - 200: `{ "courses": [{ "id": "<uuid>", "title": "..." }] }`
+
+- GET `/courses/:id`
+  - Busca um curso pelo ID
+  - Parâmetros: `id` (UUID)
+  - Respostas:
+    - 200: `{ "course": { "id": "<uuid>", "title": "...", "description": "... | null" } }`
+    - 404: vazio
+
+Há um arquivo `requisicoes.http` com exemplos prontos (compatível com extensões de REST Client).
+
+## Modelos (schema)
+Tabelas principais definidas em `src/database/schema.ts`:
+- `courses`
+  - `id` (uuid, pk, default random)
+  - `title` (text, único, obrigatório)
+  - `description` (text, opcional)
+- `users` (exemplo para estudos)
+  - `id` (uuid, pk, default random)
+  - `name` (text, obrigatório)
+  - `email` (text, único, obrigatório)
 
 API pública (Render)
 - A API também está implantada no Render e pode ser acessada em:
@@ -22,113 +96,53 @@ API pública (Render)
   - DELETE https://node-api-7zux.onrender.com/courses/:id
 - Observação sobre documentação em produção: a rota `/docs` (Swagger / scalar-api-reference) normalmente está ativa apenas quando NODE_ENV=development. Tentar https://node-api-7zux.onrender.com/docs pode não retornar a UI pública dependendo da configuração de deploy.
 
-Pré-requisitos
-- Node.js (recomendado >= 18)
-- npm ou yarn
-- Docker (para rodar Postgres via docker compose)
-- TypeScript no projeto (já presente: .ts files)
-
-Configuração local (passo a passo — Windows)
-1. Clonar / copiar repositório para sua máquina:
-   - git clone <repo-url> c:\Users\admin\OneDrive\Documentos\node-api
-
-2. Iniciar PostgreSQL 17 com Docker Compose (arquivo já presente em docker-compose.yml):
-   - PowerShell / CMD:
-     - docker compose up -d
-   - O compose expõe a porta 5432: o banco será acessível em localhost:5432
-   - Variáveis definidas no compose:
-     - POSTGRES_USER=postgres
-     - POSTGRES_PASSWORD=postgres
-     - POSTGRES_DB=desafio
-
-3. (Opcional) .env local
-   - Recomenda criar um .env na raiz com a string de conexão. Exemplo:
-     DATABASE_URL=postgresql://postgres:postgres@localhost:5432/desafio
-   - Ajuste conforme seu cliente de DB / ORM se necessário.
-
-4. Instalar dependências
-   - Abra PowerShell na pasta do projeto:
-     - npm install
-     - ou yarn install
-
-5. Rodar em modo dev (TypeScript)
-   - Se houver script dev no package.json (ex.: ts-node-dev / nodemon + ts-node):
-     - $env:NODE_ENV='development'
-     - npm run dev
-   - Alternativa: compilar e rodar
-     - npm run build
-     - npm start
-
-6. Acessar a API
-   - Base: http://localhost:3333
-   - Se NODE_ENV=development, a documentação pode ficar disponível em:
-     - http://localhost:3333/docs  (plugin scalar-api-reference registrado)
-     - além do Swagger/OpenAPI gerado pelo fastify-swagger (configuração em server.ts)
-
-Exemplos de uso (curl)
-- Criar curso (POST):
-  curl -X POST http://localhost:3333/courses -H "Content-Type: application/json" -d "{\"title\":\"Curso Exemplo\"}"
-
-- Listar cursos (GET):
-  curl http://localhost:3333/courses
-
-- Obter por id (GET):
-  curl http://localhost:3333/courses/<id>
-
-- Editar título (PUT):
-  curl -X PUT http://localhost:3333/courses/<id> -H "Content-Type: application/json" -d "{\"title\":\"Novo Título\"}"
-
-- Deletar (DELETE):
-  curl -X DELETE http://localhost:3333/courses/<id>
-
-Observações técnicas relevantes (baseado nos arquivos do projeto)
-- O servidor principal está em `server.ts`.
-  - Usa fastify com provider Zod (fastify-type-provider-zod) para validação/serialização.
-  - Registra rotas localizadas em `./src/routes/`:
-    - create-course.ts
-    - get-courses.ts
-    - get-course-by-id.ts
-    - edit-courses.ts
-    - delete-courses.ts
-- Logger configurado com `pino-pretty`.
-- Certifique-se que sua camada de acesso aos dados (db, ORM/Query Builder) esteja configurada para usar o banco em `localhost:5432` (ou conforme seu .env).
-- Exceções/erros devem ser tratados no servidor; verifique logs no console integrado do VS Code ou terminal.
-
-Solução de problemas rápida
-- Erro de conexão com Postgres:
-  - Verifique `docker compose ps` e `docker logs <container>`; confirme usuário/senha/DB.
-  - Teste com psql ou um cliente GUI apontando para localhost:5432.
-- Porta 3333 em uso: pare o processo que está usando a porta ou altere a porta em server.ts/variável de ambiente.
-- Dependências faltando ou scripts ausentes: abra package.json e confirme scripts (`dev`, `build`, `start`) antes de executar comandos.
-
-Contribuição
-- Para adicionar rotas, edite/adicione arquivos em `src/routes/`.
-- Siga o padrão atual: exportar um route plugin e registrar no `server.ts`.
-
-Licença
-- Adicione a licença desejada
-
-## Diagrama de fluxo (Mermaid)
-
-Observação: para o Mermaid funcionar corretamente no README, mantenha o bloco sem indentação e use a tag ```mermaid``` exatamente como abaixo.
+## Fluxo principal (Mermaid)
 
 ```mermaid
-flowchart LR
-  Client[Cliente (browser / curl / app)] -->|HTTP| Fastify[Fastify Server]
-  Fastify --> Routes{Rotas /courses}
-  Routes --> Create[POST /courses]
-  Routes --> List[GET /courses]
-  Routes --> GetById[GET /courses/:id]
-  Routes --> Update[PUT /courses/:id]
-  Routes --> Delete[DELETE /courses/:id]
+sequenceDiagram
+  participant C as Client
+  participant S as Fastify Server
+  participant V as Zod Validator
+  participant DB as Drizzle + PostgreSQL
 
-  Create --> DB[(Postgres 17)]
-  List --> DB
-  GetById --> DB
-  Update --> DB
-  Delete --> DB
+  C->>S: POST /courses {title}
+  S->>V: Validar body
+  V-->>S: OK ou Erro 400
+  alt válido
+    S->>DB: INSERT INTO courses (title)
+    DB-->>S: {id}
+    S-->>C: 201 {courseId}
+  else inválido
+    S-->>C: 400
+  end
 
-  Fastify --> Docs[/docs (Swagger / scalar-api-reference)]
-  DockerCompose[Docker Compose] --> DB
-  DB -->|dados persistidos| Volume[(Volume: postgres_data)]
+  C->>S: GET /courses
+  S->>DB: SELECT id,title FROM courses
+  DB-->>S: lista
+  S-->>C: 200 {courses: [...]} 
+
+  C->>S: GET /courses/:id
+  S->>V: Validar param id (uuid)
+  V-->>S: OK ou Erro 400
+  alt encontrado
+    S->>DB: SELECT * FROM courses WHERE id=...
+    DB-->>S: course
+    S-->>C: 200 {course}
+  else não encontrado
+    S-->>C: 404
+  end
 ```
+
+## Scripts
+- `npm run dev`: inicia o servidor com reload e carrega variáveis de `.env`
+- `npm run db:generate`: gera artefatos do Drizzle a partir do schema
+- `npm run db:migrate`: aplica migrações no banco
+- `npm run db:studio`: abre o Drizzle Studio
+
+## Dicas e solução de problemas
+- Conexão recusada ao Postgres: confirme `docker compose up -d` e que a porta `5432` não está em uso.
+- Variável `DATABASE_URL` ausente: verifique seu `.env`. O Drizzle exige essa variável para `db:generate`, `db:migrate` e `db:studio`.
+- Docs não aparecem em `/docs`: garanta `NODE_ENV=development` no `.env` e reinicie o servidor.
+
+## Licença
+ISC (ver `package.json`).
